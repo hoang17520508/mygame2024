@@ -32,24 +32,7 @@ void CMario::Render()
 	int aniId = -1;
 
 	// Mario is still on air check, this will not work when Mario is just stand up
-	if (y < GROUND_Y)   
-	{
-		if (abs(ax) == MARIO_ACCEL_RUN_X) // TODO: need to optimize this
-		{
-			if (nx >= 0) 
-				aniId = ID_ANI_MARIO_JUMP_RUN_RIGHT;
-			else 
-				aniId = ID_ANI_MARIO_JUMP_RUN_LEFT;
-		}
-		else 
-		{
-			if (nx >= 0) 
-				aniId = ID_ANI_MARIO_JUMP_WALK_RIGHT;
-			else 
-				aniId = ID_ANI_MARIO_JUMP_WALK_LEFT;
-		}
-	}
-	else 
+
 	if (isSitting)
 	{
 		if (nx > 0)
@@ -66,7 +49,7 @@ void CMario::Render()
 	else if (vx > 0)
 	{
 		if (ax < 0)
-			aniId = ID_ANI_MARIO_BRACE_RIGHT;
+			aniId = ID_ANI_MARIO_IDLE_RIGHT;
 		else if (ax == MARIO_ACCEL_RUN_X)
 			aniId = ID_ANI_MARIO_RUNNING_RIGHT;
 		else if (ax == MARIO_ACCEL_WALK_X)
@@ -75,7 +58,7 @@ void CMario::Render()
 	else // vx < 0
 	{
 		if (ax > 0)
-			aniId = ID_ANI_MARIO_BRACE_LEFT;
+			aniId = ID_ANI_MARIO_IDLE_LEFT;
 		else if (ax == -MARIO_ACCEL_RUN_X)
 			aniId = ID_ANI_MARIO_RUNNING_LEFT;
 		else if (ax == -MARIO_ACCEL_WALK_X)
