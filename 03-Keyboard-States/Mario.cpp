@@ -5,25 +5,23 @@ void CMario::Update(DWORD dt)
 	x += vx * dt;
 	y += vy * dt; 
 
-	// simple fall down
-	vy += MARIO_GRAVITY*dt;
+	vy += ay * dt;
 
 	vx += ax * dt;
 
 	if (abs(vx) > abs(maxVx)) vx = maxVx;
+	if (abs(vy) > abs(maxVy)) vy = maxVy;
 
 	DebugOutTitle(L"vx = %0.5f", this->vx);
 
 
 	// BAD & sinful platform collision handling, see next sample for correct collision handling
-	if (y > GROUND_Y)
-	{
-		vy = 0; y = GROUND_Y;
-	}
 
 	// simple screen edge collision!!!
 	if (vx > 0 && x > 290) x = 290;
 	if (vx < 0 && x < 0) x = 0;
+	if (vy > 0 && y > 160) y = 160;
+	if (vy < 0 && y < 0) y = 0;
 }
 
 void CMario::Render()
@@ -33,108 +31,70 @@ void CMario::Render()
 
 	// Mario is still on air check, this will not work when Mario is just stand up
 
-	if (isSitting)
-	{
-		if (nx > 0)
-			aniId = ID_ANI_MARIO_SIT_RIGHT;
-		else
-			aniId = ID_ANI_MARIO_SIT_LEFT;
-	}
-	else 
 	if (vx == 0)
 	{
-		if (nx > 0) aniId = ID_ANI_MARIO_IDLE_RIGHT;
-		else aniId = ID_ANI_MARIO_IDLE_LEFT;
+		if (nx > 0) aniId = ID_ANI_JASON_IDLE_RIGHT;
+		else aniId = ID_ANI_JASON_IDLE_LEFT;
 	}
 	else if (vx > 0)
 	{
 		if (ax < 0)
-			aniId = ID_ANI_MARIO_IDLE_RIGHT;
-		else if (ax == MARIO_ACCEL_RUN_X)
-			aniId = ID_ANI_MARIO_RUNNING_RIGHT;
-		else if (ax == MARIO_ACCEL_WALK_X)
-			aniId = ID_ANI_MARIO_WALKING_RIGHT;
+			aniId = ID_ANI_JASON_IDLE_RIGHT;
+		else if (ax == JASON_ACCEL_RUN_X)
+			aniId = ID_ANI_JASON_RUNNING_RIGHT;
+		else if (ax == JASON_ACCEL_WALK_X)
+			aniId = ID_ANI_JASON_WALKING_RIGHT;
 	}
 	else // vx < 0
 	{
 		if (ax > 0)
-			aniId = ID_ANI_MARIO_IDLE_LEFT;
-		else if (ax == -MARIO_ACCEL_RUN_X)
-			aniId = ID_ANI_MARIO_RUNNING_LEFT;
-		else if (ax == -MARIO_ACCEL_WALK_X)
-			aniId = ID_ANI_MARIO_WALKING_LEFT;
+			aniId = ID_ANI_JASON_IDLE_LEFT;
+		else if (ax == -JASON_ACCEL_RUN_X)
+			aniId = ID_ANI_JASON_RUNNING_LEFT;
+		else if (ax == -JASON_ACCEL_WALK_X)
+			aniId = ID_ANI_JASON_WALKING_LEFT;
 	}
 
-	if (aniId == -1) aniId = ID_ANI_MARIO_IDLE_RIGHT;
+	if (aniId == -1) aniId = ID_ANI_JASON_IDLE_RIGHT;
 
-	float d = 0;
-	if (isSitting) d = MARIO_SIT_HEIGHT_ADJUST;
 
-	animations->Get(aniId)->Render(x, y+d);
+	animations->Get(aniId)->Render(x, y);
 }
 
 void CMario::SetState(int state)
 {
+	DebugOut(L"[INFO] State: %d\n", state);
 	switch (state)
 	{
-	case MARIO_STATE_RUNNING_RIGHT:
+	case JASON_STATE_WALKING_RIGHT:
 		if (isSitting) break;
-		maxVx = MARIO_RUNNING_SPEED;
-		ax = MARIO_ACCEL_RUN_X;
+		maxVx = JASON_WALKING_SPEED;
+		ax = JASON_ACCEL_WALK_X;
 		nx = 1;
 		break;
-	case MARIO_STATE_RUNNING_LEFT:
+	case JASON_STATE_WALKING_LEFT:
 		if (isSitting) break;
-		maxVx = -MARIO_RUNNING_SPEED;
-		ax = -MARIO_ACCEL_RUN_X;
+		maxVx = -JASON_WALKING_SPEED;
+		ax = -JASON_ACCEL_WALK_X;
 		nx = -1;
 		break;
-	case MARIO_STATE_WALKING_RIGHT:
-		if (isSitting) break;
-		maxVx = MARIO_WALKING_SPEED;
-		ax = MARIO_ACCEL_WALK_X;
-		nx = 1;
+
+	case JASON_STATE_DOWN:
+		maxVy = JASON_WALKING_SPEED;
+		ay = JASON_ACCEL_WALK_X;
+		ny = 1;
 		break;
-	case MARIO_STATE_WALKING_LEFT:
-		if (isSitting) break;
-		maxVx = -MARIO_WALKING_SPEED;
-		ax = -MARIO_ACCEL_WALK_X;
-		nx = -1;
-		break;
-	case MARIO_STATE_JUMP: 
-		if (isSitting) break;
-		if (y == GROUND_Y)
-		{
-			if (abs(this->vx) == MARIO_RUNNING_SPEED)
-				vy = -MARIO_JUMP_RUN_SPEED_Y;
-			else 
-				vy = -MARIO_JUMP_SPEED_Y;
-		}
-		break;
-			
-	case MARIO_STATE_RELEASE_JUMP:
-		if (vy < 0) vy += MARIO_JUMP_SPEED_Y/2;
+	case JASON_STATE_UP:
+		maxVy = -JASON_WALKING_SPEED;
+		ay = -JASON_ACCEL_WALK_X;
+		ny = -1;
 		break;
 
-	case MARIO_STATE_SIT: 
-		if (y == GROUND_Y) 
-		{
-			state = MARIO_STATE_IDLE;
-			isSitting = true;
-			vx = 0; vy = 0;
-			//y += MARIO_SIT_HEIGHT_ADJUST;
-		}
-		break;
-
-	case MARIO_STATE_SIT_RELEASE:
-		isSitting = false;
-		state = MARIO_STATE_IDLE;
-		//y -= MARIO_SIT_HEIGHT_ADJUST;
-		break;
-
-	case MARIO_STATE_IDLE:
+	case JASON_STATE_IDLE:
 		ax = 0.0f;
 		vx = 0.0f;
+		ay = 0.0f;
+		vy = 0.0f;
 		break;
 	}
 
