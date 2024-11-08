@@ -54,6 +54,17 @@ void CMario::Render()
 		else if (ax == -JASON_ACCEL_WALK_X)
 			aniId = ID_ANI_JASON_WALKING_LEFT;
 	}
+	if (vy != 0)
+	{
+		if (ay > 0)
+			aniId = ID_ANI_JASON_WALKING_DOWN;
+		else 
+			if (vx == 0)
+			{
+				aniId = ID_ANI_JASON_WALKING_UP;
+			}
+	}
+	
 
 	if (aniId == -1) aniId = ID_ANI_JASON_IDLE_RIGHT;
 

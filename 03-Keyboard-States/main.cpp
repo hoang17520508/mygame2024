@@ -111,6 +111,16 @@ void LoadResources()
 	sprites->Add(10061, 425, 154, 425 + 15, 154 + 27, texJason);
 	sprites->Add(10062, 5, 154, 5 + 15, 154 + 27, texJason);
 
+	// UP
+	sprites->Add(10071, 211, 38, 228, 65, texJason);
+	sprites->Add(10072, 235, 38, 251, 65, texJason);
+	sprites->Add(10073, 260, 38, 277, 65, texJason);
+
+	// DOWN
+	sprites->Add(10081, 211, 5, 228, 32, texJason);
+	sprites->Add(10082, 235, 5, 251, 32, texJason);
+	sprites->Add(10083, 260, 5, 277, 32, texJason);
+
 	LPANIMATION ani;
 
 	ani = new CAnimation(100);	
@@ -144,6 +154,21 @@ void LoadResources()
 	ani->Add(10012);
 	ani->Add(10013);
 	animations->Add(ID_ANI_JASON_RUNNING_LEFT, ani);
+
+
+	/// walk up
+	ani = new CAnimation(50);
+	ani->Add(10071);
+	ani->Add(10072);
+	ani->Add(10073);
+	animations->Add(ID_ANI_JASON_WALKING_UP, ani);
+
+	///walk down
+	ani = new CAnimation(50);
+	ani->Add(10081);
+	ani->Add(10082);
+	ani->Add(10083);
+	animations->Add(ID_ANI_JASON_WALKING_DOWN, ani);
 
 	
 
